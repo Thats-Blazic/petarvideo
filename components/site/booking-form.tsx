@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { Check } from 'lucide-react'
 
+import { CustomSelect } from '@/components/site/custom-select'
 import { DurationPicker } from '@/components/site/duration-picker'
 import { computeDurationSurcharge, formatDuration, toSeconds, type DurationUnit } from '@/lib/duration'
 import { reveal } from '@/lib/motion'
@@ -100,13 +101,11 @@ export function BookingForm({ service, onServiceChange, requestId }: BookingForm
               <div className="grid gap-6 sm:grid-cols-2">
                 <label>
                   Choose a service
-                  <select value={service} onChange={(event) => onServiceChange(event.target.value as Service)}>
-                    {packages.map((item) => (
-                      <option key={item.name} value={item.name}>
-                        {item.name}
-                      </option>
-                    ))}
-                  </select>
+                  <CustomSelect
+                    value={service}
+                    onChange={(next) => onServiceChange(next)}
+                    options={packages.map((item) => ({ value: item.name, label: item.name }))}
+                  />
                 </label>
                 <label>
                   Number of videos

@@ -1,0 +1,16 @@
+'use client'
+
+import { motion, useScroll, useSpring } from 'framer-motion'
+
+/** Thin progress bar pinned to the top of the viewport, filling as the visitor scrolls. */
+export function ScrollProgress() {
+  const { scrollYProgress } = useScroll()
+  const scaleX = useSpring(scrollYProgress, { stiffness: 300, damping: 40, restDelta: 0.001 })
+
+  return (
+    <motion.div
+      style={{ scaleX }}
+      className="fixed left-0 top-0 z-[60] h-[3px] w-full origin-left bg-gradient-to-r from-[#ff5d35] via-[#ff5d35] to-black"
+    />
+  )
+}

@@ -146,8 +146,8 @@ export function Hero() {
             />
           </motion.p>
 
-          <h1 className="max-w-4xl text-[clamp(3rem,13vw,9.4rem)] font-medium leading-[.9] tracking-[-.06em] sm:leading-[.84] sm:tracking-[-.08em]">
-            <span className="block overflow-hidden">
+          <h1 className="max-w-4xl text-[clamp(3rem,13vw,9.4rem)] font-medium tracking-[-.06em] sm:tracking-[-.08em]">
+            <span className="-my-[.09em] block overflow-hidden py-[.09em] leading-[.9] sm:leading-[.84]">
               <motion.span
                 initial={{ y: '110%' }}
                 animate={{ y: '0%' }}
@@ -157,7 +157,7 @@ export function Hero() {
                 Your footage.
               </motion.span>
             </span>
-            <span className="block overflow-hidden text-black/35">
+            <span className="-my-[.09em] block overflow-hidden py-[.09em] leading-[.9] text-black/35 sm:leading-[.84]">
               <motion.span
                 initial={{ y: '110%' }}
                 animate={{ y: '0%' }}

@@ -1,3 +1,4 @@
+import { BRAND_NAME } from '@/lib/brand'
 import { formatDuration } from '@/lib/duration'
 import { formatPrice } from '@/lib/pricing'
 
@@ -58,7 +59,7 @@ function row(label: string, value: string) {
 
 export function bookingEmailSubject(payload: BookingRequestPayload) {
   const length = formatDuration(payload.durationSeconds)
-  return `New ptr.ae booking — ${payload.name} · ${length}`
+  return `New ${BRAND_NAME} booking — ${payload.name} · ${length}`
 }
 
 export function buildBookingEmailHtml(payload: BookingRequestPayload) {
@@ -81,7 +82,7 @@ export function buildBookingEmailHtml(payload: BookingRequestPayload) {
           <table width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;background:#fff;border-radius:16px;overflow:hidden;border:1px solid #e8e8ed;">
             <tr>
               <td style="padding:28px 28px 8px;">
-                <p style="margin:0 0 8px;font-size:12px;font-weight:600;letter-spacing:0.2em;color:#007AFF;">PTR.AE</p>
+                <p style="margin:0 0 8px;font-size:12px;font-weight:600;letter-spacing:0.2em;color:#007AFF;">${escapeHtml(BRAND_NAME.toUpperCase())}</p>
                 <h1 style="margin:0;font-size:26px;font-weight:600;letter-spacing:-0.03em;color:#111;">New booking request</h1>
               </td>
             </tr>
@@ -119,7 +120,7 @@ export function buildBookingEmailHtml(payload: BookingRequestPayload) {
 export function buildBookingEmailText(payload: BookingRequestPayload) {
   const length = formatDuration(payload.durationSeconds)
   return [
-    'New ptr.ae booking request',
+    `New ${BRAND_NAME} booking request`,
     '',
     `Name: ${payload.name}`,
     `Email: ${payload.email}`,

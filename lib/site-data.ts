@@ -52,27 +52,11 @@ export const projects: Project[] = [
   },
 ]
 
-export type PricingTier = {
-  seconds: number
-  price: number
-  tag: string
-  popular?: boolean
-}
-
-/** Flat €7/second pricing, shown as a few common reference lengths. */
-export const pricingTiers: PricingTier[] = [
-  { seconds: 10, price: 70, tag: 'Quick sting / logo reveal' },
-  { seconds: 15, price: 105, tag: 'Reels · TikTok · Shorts' },
-  { seconds: 30, price: 210, tag: 'Product or app teaser', popular: true },
-  { seconds: 60, price: 420, tag: 'Explainer / brand animation' },
-  { seconds: 120, price: 840, tag: 'Full narrative piece' },
-]
-
 export const stats: { value: number; suffix: string; label: string }[] = [
   { value: 180, suffix: '+', label: 'Animations delivered' },
   { value: 60, suffix: '+', label: 'Happy clients' },
   { value: 4, suffix: 'y', label: 'Years in motion design' },
-  { value: 24, suffix: 'h', label: 'Avg. turnaround' },
+  { value: 7, suffix: 'Days', label: 'Avg. turnaround' },
 ]
 
 export const processSteps = [

@@ -9,16 +9,15 @@ import { Faq } from '@/components/site/faq'
 import { Footer } from '@/components/site/footer'
 import { Hero } from '@/components/site/hero'
 import { Navbar } from '@/components/site/navbar'
-import { Pricing } from '@/components/site/pricing'
 import { Process } from '@/components/site/process'
 import { ProjectModal } from '@/components/site/project-modal'
 import { ScrollProgress } from '@/components/site/scroll-progress'
-import { SmoothScrollProvider, useSmoothScroll } from '@/components/site/smooth-scroll'
+import { SmoothScrollProvider } from '@/components/site/smooth-scroll'
 import { Stats } from '@/components/site/stats'
 import { Work } from '@/components/site/work'
 import {
+  bookMarqueePhrases,
   heroMarqueePhrases,
-  pricingMarqueePhrases,
   processMarqueePhrases,
   workMarqueePhrases,
 } from '@/lib/marquee-phrases'
@@ -27,16 +26,6 @@ import type { Project } from '@/lib/site-data'
 
 function PortfolioContent() {
   const [selectedProject, setSelectedProject] = useState<Project | null>(null)
-  const [presetSeconds, setPresetSeconds] = useState(15)
-  const [requestId, setRequestId] = useState(0)
-  const smoothScroll = useSmoothScroll()
-
-  function applyDuration(seconds: number) {
-    setPresetSeconds(seconds)
-    setRequestId((id) => id + 1)
-    smoothScroll?.scrollTo('#book')
-  }
-
   return (
     <motion.main
       initial={{ opacity: 0 }}
@@ -54,9 +43,8 @@ function PortfolioContent() {
       <Stats />
       <SectionBridge phrases={processMarqueePhrases} duration={34} />
       <Process />
-      <SectionBridge phrases={pricingMarqueePhrases} reverse duration={38} />
-      <Pricing onChooseDuration={applyDuration} />
-      <BookingForm presetSeconds={presetSeconds} requestId={requestId} />
+      <SectionBridge phrases={bookMarqueePhrases} reverse duration={38} />
+      <BookingForm presetSeconds={15} requestId={0} />
       <Faq />
       <Footer />
 

@@ -12,7 +12,7 @@ import { easeOut } from '@/lib/motion'
 const links = [
   { href: '#work', label: 'Work' },
   { href: '#process', label: 'Process' },
-  { href: '#pricing', label: 'Pricing' },
+  { href: '#book', label: 'Booking' },
   { href: '#faq', label: 'FAQ' },
 ]
 

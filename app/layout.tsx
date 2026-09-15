@@ -2,7 +2,7 @@ import { Analytics } from '@vercel/analytics/next'
 import type { Metadata, Viewport } from 'next'
 import './globals.css'
 
-import { BRAND_NAME, SITE_DESCRIPTION, SITE_TITLE, SITE_URL } from '@/lib/brand'
+import { BRAND_NAME, OG_IMAGE_PATH, SITE_DESCRIPTION, SITE_TITLE, SITE_URL } from '@/lib/brand'
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -22,18 +22,19 @@ export const metadata: Metadata = {
     description: SITE_DESCRIPTION,
     images: [
       {
-        url: '/petar-avatar.jpg',
-        width: 512,
-        height: 512,
-        alt: BRAND_NAME,
+        url: OG_IMAGE_PATH,
+        width: 1024,
+        height: 537,
+        alt: `${BRAND_NAME} — Your idea. My touch.`,
+        type: 'image/jpeg',
       },
     ],
   },
   twitter: {
-    card: 'summary',
+    card: 'summary_large_image',
     title: SITE_TITLE,
     description: SITE_DESCRIPTION,
-    images: ['/petar-avatar.jpg'],
+    images: [OG_IMAGE_PATH],
   },
 }
 

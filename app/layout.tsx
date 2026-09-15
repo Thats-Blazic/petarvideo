@@ -2,26 +2,38 @@ import { Analytics } from '@vercel/analytics/next'
 import type { Metadata, Viewport } from 'next'
 import './globals.css'
 
+import { BRAND_NAME, SITE_DESCRIPTION, SITE_TITLE, SITE_URL } from '@/lib/brand'
+
 export const metadata: Metadata = {
-  title: 'Petar Video Editor — Your footage. My edit.',
-  description: 'Cinematic edits, social content and videos made to stand out by Petar Video Editor.',
-  generator: 'v0.app',
+  metadataBase: new URL(SITE_URL),
+  title: SITE_TITLE,
+  description: SITE_DESCRIPTION,
+  applicationName: BRAND_NAME,
   icons: {
-    icon: [
+    icon: [{ url: '/petar-avatar.jpg', type: 'image/jpeg' }],
+    apple: [{ url: '/petar-avatar.jpg', type: 'image/jpeg' }],
+  },
+  openGraph: {
+    type: 'website',
+    locale: 'en_US',
+    url: SITE_URL,
+    siteName: BRAND_NAME,
+    title: SITE_TITLE,
+    description: SITE_DESCRIPTION,
+    images: [
       {
-        url: '/icon-light-32x32.png',
-        media: '(prefers-color-scheme: light)',
-      },
-      {
-        url: '/icon-dark-32x32.png',
-        media: '(prefers-color-scheme: dark)',
-      },
-      {
-        url: '/icon.svg',
-        type: 'image/svg+xml',
+        url: '/petar-avatar.jpg',
+        width: 512,
+        height: 512,
+        alt: BRAND_NAME,
       },
     ],
-    apple: '/apple-icon.png',
+  },
+  twitter: {
+    card: 'summary',
+    title: SITE_TITLE,
+    description: SITE_DESCRIPTION,
+    images: ['/petar-avatar.jpg'],
   },
 }
 

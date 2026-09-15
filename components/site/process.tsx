@@ -4,6 +4,8 @@ import { useRef, useState } from 'react'
 import { AnimatePresence, motion, useMotionValueEvent, useScroll } from 'framer-motion'
 import { MessageSquare, Send, UploadCloud, Wand2 } from 'lucide-react'
 
+import { BrandWatermark } from '@/components/site/brand-mark'
+import { SectionHeader } from '@/components/site/section-header'
 import { reveal } from '@/lib/motion'
 import { processSteps } from '@/lib/site-data'
 
@@ -27,14 +29,16 @@ export function Process() {
   const ActiveIcon = stepIcons[processSteps[active].icon]
 
   return (
-    <section id="process" ref={ref} className="mx-auto max-w-6xl px-6 py-20 sm:px-10 sm:py-24 lg:py-36">
-      <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, margin: '-100px' }} variants={reveal}>
-        <p className="mb-4 text-xs font-semibold tracking-[.28em] text-black/40">HOW IT WORKS</p>
-        <h2 className="text-4xl font-medium tracking-[-.05em] sm:text-5xl md:text-7xl md:tracking-[-.06em]">
-          From raw clips
-          <br />
-          <span className="text-black/35">to final cut.</span>
-        </h2>
+    <section id="process" ref={ref} className="snap-section relative mx-auto max-w-6xl px-6 py-20 sm:px-10 sm:py-24 lg:py-36">
+      <BrandWatermark className="right-0 top-4 rotate-2" size={340} />
+      <motion.div
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, margin: '-100px' }}
+        variants={reveal}
+        className="relative"
+      >
+        <SectionHeader title="How it works" />
       </motion.div>
 
       <div className="mt-12 grid gap-8 sm:mt-16 lg:grid-cols-[.9fr_1.1fr] lg:gap-16">
@@ -53,7 +57,7 @@ export function Process() {
                   transition={{ duration: 0.35 }}
                   className="flex h-11 w-11 items-center justify-center rounded-full bg-white/10"
                 >
-                  <ActiveIcon className="h-5 w-5 text-[#ff5d35]" />
+                  <ActiveIcon className="h-5 w-5 text-[#007AFF]" />
                 </motion.span>
               </AnimatePresence>
             </div>
@@ -74,7 +78,7 @@ export function Process() {
                 <span
                   key={step.number}
                   className={`h-1 flex-1 rounded-full transition-colors duration-500 ${
-                    index === active ? 'bg-[#ff5d35]' : 'bg-white/15'
+                    index === active ? 'bg-[#007AFF]' : 'bg-white/15'
                   }`}
                 />
               ))}
@@ -100,8 +104,8 @@ export function Process() {
                 <div className="flex flex-col items-center">
                   <motion.div
                     animate={{
-                      backgroundColor: isActive ? '#111111' : 'rgba(0,0,0,0)',
-                      borderColor: isActive ? '#111111' : 'rgba(0,0,0,.15)',
+                      backgroundColor: isActive ? '#007AFF' : 'rgba(0,0,0,0)',
+                      borderColor: isActive ? '#007AFF' : 'rgba(0,0,0,.15)',
                       scale: isActive ? 1.08 : 1,
                     }}
                     transition={{ duration: 0.4 }}
@@ -112,7 +116,7 @@ export function Process() {
                   {!isLast && (
                     <div className="relative my-1 w-px flex-1 bg-black/10">
                       <motion.div
-                        className="absolute inset-x-0 top-0 w-px bg-black"
+                        className="absolute inset-x-0 top-0 w-px bg-[#007AFF]"
                         initial={{ height: 0 }}
                         animate={{ height: active > index ? '100%' : '0%' }}
                         transition={{ duration: 0.4 }}

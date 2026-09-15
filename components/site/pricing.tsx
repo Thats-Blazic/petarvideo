@@ -1,81 +1,87 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { Check } from 'lucide-react'
 
+import { BrandWatermark } from '@/components/site/brand-mark'
+import { SectionHeader } from '@/components/site/section-header'
 import { Spotlight } from '@/components/site/spotlight'
 import { formatDuration } from '@/lib/duration'
 import { reveal } from '@/lib/motion'
-import { packages, type Service } from '@/lib/site-data'
+import { pricingTiers } from '@/lib/site-data'
 
 type PricingProps = {
-  onChoosePackage: (service: Service) => void
+  onChooseDuration: (seconds: number) => void
 }
 
-export function Pricing({ onChoosePackage }: PricingProps) {
+export function Pricing({ onChooseDuration }: PricingProps) {
   return (
-    <section id="pricing" className="border-y border-black/10 bg-white px-6 py-20 sm:px-10 sm:py-24 lg:py-36">
-      <div className="mx-auto max-w-6xl">
+    <section id="pricing" className="snap-section relative overflow-hidden border-y border-black/10 bg-white px-6 py-20 sm:px-10 sm:py-24 lg:py-36">
+      <BrandWatermark className="-left-10 bottom-0 -rotate-3" size={420} />
+      <div className="relative mx-auto max-w-6xl">
         <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={reveal}>
-          <p className="mb-4 text-xs font-semibold tracking-[.28em] text-black/40">02 / PRICING</p>
-          <h2 className="text-4xl font-medium tracking-[-.05em] sm:text-5xl md:text-7xl md:tracking-[-.06em]">
-            Simple pricing.
-          </h2>
-          <p className="mt-4 max-w-md text-black/50">
-            Every package includes a base duration. Need more? Set the exact clip length in the booking form and the
-            price updates instantly.
-          </p>
+          <SectionHeader
+            title="Pricing"
+            description={
+              <>
+                One flat rate — <span className="font-semibold text-[#007AFF]">€7 per second</span> of final animation.
+                No hidden tiers, no surprises. The price is always determined by how long your finished piece is.
+              </>
+            }
+          />
         </motion.div>
 
-        <div className="mt-12 grid gap-4 sm:mt-14 md:grid-cols-3">
-          {packages.map((item, index) => (
+        <div className="mt-12 grid gap-4 sm:mt-14 sm:grid-cols-2 lg:grid-cols-5">
+          {pricingTiers.map((tier, index) => (
             <motion.div
-              key={item.name}
+              key={tier.seconds}
               initial="hidden"
               whileInView="visible"
               viewport={{ once: true }}
               variants={reveal}
-              transition={{ delay: index * 0.1 }}
+              transition={{ delay: index * 0.08 }}
+              whileHover={{ y: -6 }}
               className="relative"
             >
-              {item.popular && (
-                <span className="absolute -top-3 left-6 z-10 rounded-full bg-[#ff5d35] px-3 py-1 text-[10px] font-semibold tracking-[.15em] text-white">
+              {tier.popular && (
+                <span className="absolute -top-3 left-1/2 z-10 -translate-x-1/2 rounded-full bg-[#007AFF] px-3 py-1 text-[10px] font-semibold tracking-[.15em] text-white">
                   MOST POPULAR
                 </span>
               )}
               <Spotlight
-                color="0,0,0"
-                className={`h-full rounded-[1.75rem] border p-6 transition-shadow duration-500 sm:p-7 ${
-                  item.popular ? 'border-black/25 shadow-[0_25px_60px_rgba(0,0,0,.08)]' : 'border-black/10'
+                color="0,122,255"
+                className={`flex h-full flex-col rounded-[1.75rem] border p-6 text-center transition-shadow duration-500 sm:p-7 ${
+                  tier.popular ? 'border-[#007AFF]/30 shadow-[0_25px_60px_rgba(0,122,255,.1)]' : 'border-black/10'
                 }`}
               >
-                <p className="text-xs font-semibold tracking-[.2em] text-black/45">{item.name}</p>
-                <div className="mt-14 flex items-baseline gap-2 sm:mt-16">
-                  <span className="text-4xl font-medium tracking-[-.05em] sm:text-4xl">€{item.price}</span>
-                  <span className="text-sm text-black/40">{item.suffix}</span>
-                </div>
-                <p className="mt-3 text-sm text-black/50">{item.detail}</p>
-                <p className="mt-1 text-xs text-black/35">
-                  Includes up to {formatDuration(item.duration.includedSeconds)} · +€{item.duration.perMinuteOver}/min after
+                <p className="text-xs font-semibold tracking-[.2em] text-black/45">
+                  {formatDuration(tier.seconds).toUpperCase()}
                 </p>
-                <ul className="mt-6 space-y-2">
-                  {item.features.map((feature) => (
-                    <li key={feature} className="flex items-start gap-2 text-sm text-black/60">
-                      <Check className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[#ff5d35]" />
-                      {feature}
-                    </li>
-                  ))}
-                </ul>
+                <div className="mt-8 flex items-baseline justify-center gap-1">
+                  <span className="text-4xl font-medium tracking-[-.05em]">€{tier.price}</span>
+                </div>
+                <p className="mt-1 text-xs text-black/35">= €7 / second</p>
+                <p className="mt-4 flex-1 text-sm text-black/50">{tier.tag}</p>
                 <button
-                  onClick={() => onChoosePackage(item.name)}
-                  className="mt-8 w-full rounded-full bg-black py-3 text-sm font-medium text-white transition hover:bg-[#ff5d35]"
+                  onClick={() => onChooseDuration(tier.seconds)}
+                  className="mt-6 w-full rounded-full bg-[#007AFF] py-3 text-sm font-medium text-white transition hover:bg-[#0066CC]"
                 >
-                  Choose Package
+                  Choose This Length
                 </button>
               </Spotlight>
             </motion.div>
           ))}
         </div>
+
+        <motion.p
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true }}
+          variants={reveal}
+          className="mt-8 text-sm text-black/45"
+        >
+          Need something in between? Set an exact duration — in seconds or minutes — in the booking form below and
+          watch the price update instantly.
+        </motion.p>
       </div>
     </section>
   )

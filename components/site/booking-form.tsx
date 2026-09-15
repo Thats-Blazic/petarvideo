@@ -1,60 +1,100 @@
 'use client'
 
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { Check } from 'lucide-react'
 
-import { CustomSelect } from '@/components/site/custom-select'
+import { BrandWatermark } from '@/components/site/brand-mark'
+import { SectionHeader } from '@/components/site/section-header'
+import { DatePicker } from '@/components/site/date-picker'
 import { DurationPicker } from '@/components/site/duration-picker'
-import { computeDurationSurcharge, formatDuration, toSeconds, type DurationUnit } from '@/lib/duration'
+import { formatDuration, toSeconds, type DurationUnit } from '@/lib/duration'
 import { reveal } from '@/lib/motion'
-import { packages, type Service } from '@/lib/site-data'
+import { formatPrice, priceForSeconds } from '@/lib/pricing'
 
 type BookingFormProps = {
-  service: Service
-  onServiceChange: (service: Service) => void
+  /** Duration (in seconds) to preload the picker with — set from a project card or pricing tier. */
+  presetSeconds: number
+  /** Bumped whenever presetSeconds should be re-applied, even if the value itself is unchanged. */
   requestId: number
 }
 
-export function BookingForm({ service, onServiceChange, requestId }: BookingFormProps) {
-  const activePackage = useMemo(() => packages.find((item) => item.name === service) ?? packages[0], [service])
+function toUnitValue(seconds: number): { unit: DurationUnit; value: number } {
+  if (seconds >= 60 && seconds % 60 === 0) return { unit: 'min', value: seconds / 60 }
+  return { unit: 'sec', value: seconds }
+}
 
+export function BookingForm({ presetSeconds, requestId }: BookingFormProps) {
+  const [{ unit, value: durationValue }, setDuration] = useState(() => toUnitValue(presetSeconds))
   const [quantity, setQuantity] = useState(1)
-  const [unit, setUnit] = useState<DurationUnit>(activePackage.duration.includedSeconds < 60 ? 'sec' : 'min')
-  const [durationValue, setDurationValue] = useState(
-    unit === 'sec' ? activePackage.duration.defaultSeconds : Math.round(activePackage.duration.defaultSeconds / 60),
-  )
+  const [budget, setBudget] = useState('')
+  const [deadline, setDeadline] = useState('')
+  const [name, setName] = useState('')
+  const [email, setEmail] = useState('')
+  const [details, setDetails] = useState('')
   const [sent, setSent] = useState(false)
+  const [submitting, setSubmitting] = useState(false)
+  const [submitError, setSubmitError] = useState<string | null>(null)
 
-  // Whenever the selected package changes (from a project card, pricing card, or the select below),
-  // reset the duration picker to a sensible default for that package.
+  // Whenever a project card or pricing tier sets a new preset, reload the picker with it.
   useEffect(() => {
-    const nextUnit: DurationUnit = activePackage.duration.defaultSeconds < 60 ? 'sec' : 'min'
-    setUnit(nextUnit)
-    setDurationValue(
-      nextUnit === 'sec' ? activePackage.duration.defaultSeconds : Math.round(activePackage.duration.defaultSeconds / 60),
-    )
+    setDuration(toUnitValue(presetSeconds))
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [requestId, activePackage.name])
+  }, [requestId])
 
   const durationSeconds = toSeconds(durationValue, unit)
-  const surcharge = computeDurationSurcharge(durationSeconds, activePackage)
-  const total = (activePackage.price + surcharge) * quantity
+  const pricePerItem = priceForSeconds(durationSeconds)
+  const total = pricePerItem * quantity
+
+  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault()
+    setSubmitError(null)
+    setSubmitting(true)
+
+    try {
+      const response = await fetch('/api/booking', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name,
+          email,
+          quantity,
+          durationSeconds,
+          budget,
+          deadline,
+          details,
+          estimatedTotal: total,
+        }),
+      })
+
+      const data = (await response.json()) as { error?: string }
+      if (!response.ok) {
+        setSubmitError(data.error ?? 'Something went wrong. Please try again.')
+        return
+      }
+
+      setSent(true)
+    } catch {
+      setSubmitError('Network error. Check your connection and try again.')
+    } finally {
+      setSubmitting(false)
+    }
+  }
 
   return (
-    <section id="book" className="mx-auto max-w-6xl px-6 py-20 sm:px-10 sm:py-24 lg:py-36">
-      <div className="grid gap-12 lg:grid-cols-[.8fr_1.2fr] lg:gap-16">
+    <section id="book" className="snap-section relative overflow-hidden px-6 py-20 sm:px-10 sm:py-24 lg:py-36">
+      <BrandWatermark className="-left-16 top-6 -rotate-3" size={190} />
+      <div className="relative mx-auto grid max-w-6xl gap-12 lg:grid-cols-[.8fr_1.2fr] lg:gap-16">
         <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={reveal}>
-          <p className="mb-4 text-xs font-semibold tracking-[.28em] text-black/40">03 / BOOKING</p>
-          <h2 className="text-4xl font-medium tracking-[-.05em] sm:text-5xl md:text-7xl md:tracking-[-.06em]">
-            Let&apos;s make
-            <br />
-            <span className="text-black/35">something.</span>
-          </h2>
-          <p className="mt-7 max-w-xs text-black/50">
-            Tell me a little about your project — including how long the final clip should be — and I&apos;ll get back
-            to you shortly.
-          </p>
+          <SectionHeader
+            title="Booking"
+            description={
+              <>
+                Tell me about your project — how long the final animation should be, your budget if you have one, and
+                what you&apos;re trying to say. I&apos;ll get back to you shortly.
+              </>
+            }
+          />
         </motion.div>
 
         <AnimatePresence mode="wait">
@@ -77,8 +117,7 @@ export function BookingForm({ service, onServiceChange, requestId }: BookingForm
                 Request received.
               </h3>
               <p className="mt-3 text-white/55">
-                A {formatDuration(durationSeconds)} {activePackage.name.toLowerCase()} project — I&apos;ll get back to
-                you shortly.
+                A {formatDuration(durationSeconds)} motion design project — I&apos;ll get back to you shortly.
               </p>
               <button
                 onClick={() => setSent(false)}
@@ -92,23 +131,12 @@ export function BookingForm({ service, onServiceChange, requestId }: BookingForm
               key="form"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              onSubmit={(event) => {
-                event.preventDefault()
-                setSent(true)
-              }}
+              onSubmit={handleSubmit}
               className="space-y-7 rounded-[1.75rem] border border-black/10 bg-white p-5 sm:space-y-8 sm:rounded-[2rem] sm:p-8 lg:p-10"
             >
               <div className="grid gap-6 sm:grid-cols-2">
                 <label>
-                  Choose a service
-                  <CustomSelect
-                    value={service}
-                    onChange={(next) => onServiceChange(next)}
-                    options={packages.map((item) => ({ value: item.name, label: item.name }))}
-                  />
-                </label>
-                <label>
-                  Number of videos
+                  Number of animations
                   <input
                     type="number"
                     min="1"
@@ -117,33 +145,50 @@ export function BookingForm({ service, onServiceChange, requestId }: BookingForm
                     onChange={(event) => setQuantity(Math.max(1, Number(event.target.value)))}
                   />
                 </label>
+                <label>
+                  Your budget <span className="text-black/30">(optional)</span>
+                  <input
+                    value={budget}
+                    onChange={(event) => setBudget(event.target.value)}
+                    placeholder="e.g. €300"
+                  />
+                </label>
               </div>
 
               <DurationPicker
                 unit={unit}
                 value={durationValue}
-                onChange={(nextUnit, nextValue) => {
-                  setUnit(nextUnit)
-                  setDurationValue(nextValue)
-                }}
-                includedLabel={`${activePackage.name} includes up to ${formatDuration(activePackage.duration.includedSeconds)}`}
-                surchargeLabel={surcharge > 0 ? `+€${surcharge} for the extra length beyond what's included` : undefined}
+                onChange={(nextUnit, nextValue) => setDuration({ unit: nextUnit, value: nextValue })}
+                priceLabel={`${formatPrice(durationSeconds)} for this length`}
               />
 
               <div className="grid gap-6 sm:grid-cols-2">
                 <label>
                   Your name
-                  <input required placeholder="Jane Smith" />
+                  <input
+                    required
+                    value={name}
+                    onChange={(event) => setName(event.target.value)}
+                    placeholder="Jane Smith"
+                    autoComplete="name"
+                  />
                 </label>
                 <label>
                   Email
-                  <input required type="email" placeholder="you@example.com" />
+                  <input
+                    required
+                    type="email"
+                    value={email}
+                    onChange={(event) => setEmail(event.target.value)}
+                    placeholder="you@example.com"
+                    autoComplete="email"
+                  />
                 </label>
               </div>
               <div className="grid gap-6 sm:grid-cols-2">
                 <label>
                   Preferred deadline
-                  <input type="date" />
+                  <DatePicker value={deadline} onChange={setDeadline} />
                 </label>
                 <label>
                   Estimated price
@@ -159,14 +204,34 @@ export function BookingForm({ service, onServiceChange, requestId }: BookingForm
                       €{total}
                     </motion.div>
                   </AnimatePresence>
+                  <p className="mt-1.5 text-xs text-black/35">
+                    €7/sec × {formatDuration(durationSeconds)}
+                    {quantity > 1 ? ` × ${quantity} animations` : ''}
+                  </p>
                 </label>
               </div>
               <label>
                 Project details
-                <textarea required rows={4} placeholder="What are you working on?" />
+                <textarea
+                  required
+                  rows={4}
+                  value={details}
+                  onChange={(event) => setDetails(event.target.value)}
+                  placeholder="What are you working on?"
+                  minLength={10}
+                />
               </label>
-              <button className="w-full rounded-full bg-black py-4 text-sm font-medium text-white transition hover:bg-[#ff5d35]">
-                Send Booking Request <span className="ml-2">→</span>
+              {submitError ? (
+                <p className="rounded-xl bg-red-500/10 px-4 py-3 text-sm text-red-700" role="alert">
+                  {submitError}
+                </p>
+              ) : null}
+              <button
+                type="submit"
+                disabled={submitting}
+                className="w-full rounded-full bg-[#007AFF] py-4 text-sm font-medium text-white transition hover:bg-[#0066CC] disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                {submitting ? 'Sending…' : 'Send Booking Request'} <span className="ml-2">→</span>
               </button>
             </motion.form>
           )}

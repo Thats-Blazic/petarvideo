@@ -5,23 +5,25 @@ import { Clock } from 'lucide-react'
 
 import { formatDuration, type DurationUnit } from '@/lib/duration'
 
-const secondsChips = [15, 30, 45, 60, 90, 120]
+const secondsChips = [10, 15, 30, 45, 60, 90, 120]
 const minutesChips = [1, 2, 3, 5, 8, 12, 20]
 
 type DurationPickerProps = {
   unit: DurationUnit
   value: number
   onChange: (unit: DurationUnit, value: number) => void
-  includedLabel?: string
-  surchargeLabel?: string
+  /** Shown top-right — used to surface the live computed price for this duration. */
+  priceLabel?: string
 }
 
-export function DurationPicker({ unit, value, onChange, includedLabel, surchargeLabel }: DurationPickerProps) {
+export function DurationPicker({ unit, value, onChange, priceLabel }: DurationPickerProps) {
   const chips = unit === 'sec' ? secondsChips : minutesChips
   const min = unit === 'sec' ? 5 : 1
   const max = unit === 'sec' ? 180 : 30
   const step = unit === 'sec' ? 5 : 1
   const progress = ((value - min) / (max - min)) * 100
+  const thumbSize = 22
+  const fillWidth = `calc((100% - ${thumbSize}px) * ${progress / 100} + ${thumbSize / 2}px)`
 
   function switchUnit(nextUnit: DurationUnit) {
     if (nextUnit === unit) return
@@ -32,7 +34,7 @@ export function DurationPicker({ unit, value, onChange, includedLabel, surcharge
     <div className="rounded-[1.5rem] border border-black/10 bg-black/[.02] p-5 sm:p-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <span className="flex items-center gap-2 text-xs font-semibold tracking-[.1em] text-black/50">
-          <Clock className="h-3.5 w-3.5" /> CLIP DURATION
+          <Clock className="h-3.5 w-3.5" /> ANIMATION DURATION
         </span>
         <div className="relative flex rounded-full bg-black/5 p-1 text-xs font-medium">
           {(['sec', 'min'] as DurationUnit[]).map((option) => (
@@ -46,7 +48,7 @@ export function DurationPicker({ unit, value, onChange, includedLabel, surcharge
               {unit === option && (
                 <motion.span
                   layoutId="duration-unit-pill"
-                  className="absolute inset-0 -z-10 rounded-full bg-black"
+                  className="absolute inset-0 -z-10 rounded-full bg-[#007AFF]"
                   transition={{ type: 'spring', stiffness: 420, damping: 32 }}
                 />
               )}
@@ -71,22 +73,44 @@ export function DurationPicker({ unit, value, onChange, includedLabel, surcharge
             </motion.span>
           </AnimatePresence>
         </div>
-        {includedLabel && (
-          <p className="max-w-[11rem] text-right text-xs leading-snug text-black/40">{includedLabel}</p>
+        {priceLabel && (
+          <AnimatePresence mode="wait" initial={false}>
+            <motion.p
+              key={priceLabel}
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.2 }}
+              className="text-right text-sm font-semibold text-[#007AFF]"
+            >
+              {priceLabel}
+            </motion.p>
+          </AnimatePresence>
         )}
       </div>
 
-      <input
-        type="range"
-        min={min}
-        max={max}
-        step={step}
-        value={value}
-        onChange={(event) => onChange(unit, Number(event.target.value))}
-        aria-label="Clip duration"
-        className="duration-slider mt-5 w-full"
-        style={{ '--progress': `${progress}%` } as React.CSSProperties}
-      />
+      <div className="relative mt-5 h-7 w-full">
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-x-0 top-1/2 h-1.5 -translate-y-1/2 rounded-full bg-black/10"
+        />
+        <div
+          aria-hidden
+          className="pointer-events-none absolute top-1/2 left-0 h-1.5 max-w-full -translate-y-1/2 rounded-full bg-[#007AFF] transition-[width] duration-150 ease-out"
+          style={{ width: fillWidth }}
+        />
+        <input
+          type="range"
+          min={min}
+          max={max}
+          step={step}
+          value={value}
+          onChange={(event) => onChange(unit, Number(event.target.value))}
+          aria-label="Animation duration"
+          aria-valuetext={formatDuration(unit === 'sec' ? value : value * 60)}
+          className="duration-slider absolute inset-0 z-10 w-full"
+        />
+      </div>
 
       <div className="mt-4 flex flex-wrap gap-2">
         {chips.map((chip) => (
@@ -95,7 +119,9 @@ export function DurationPicker({ unit, value, onChange, includedLabel, surcharge
             type="button"
             onClick={() => onChange(unit, chip)}
             className={`rounded-full border px-3 py-1.5 text-xs transition ${
-              value === chip ? 'border-black bg-black text-white' : 'border-black/15 text-black/55 hover:border-black/30'
+              value === chip
+                ? 'border-[#007AFF] bg-[#007AFF] text-white'
+                : 'border-black/15 text-black/55 hover:border-black/30'
             }`}
           >
             {unit === 'sec' ? `${chip}s` : `${chip} min`}
@@ -103,18 +129,7 @@ export function DurationPicker({ unit, value, onChange, includedLabel, surcharge
         ))}
       </div>
 
-      <AnimatePresence>
-        {surchargeLabel && (
-          <motion.p
-            initial={{ opacity: 0, height: 0, marginTop: 0 }}
-            animate={{ opacity: 1, height: 'auto', marginTop: 12 }}
-            exit={{ opacity: 0, height: 0, marginTop: 0 }}
-            className="text-xs font-medium text-[#ff5d35]"
-          >
-            {surchargeLabel}
-          </motion.p>
-        )}
-      </AnimatePresence>
+      <p className="mt-4 text-xs text-black/40">Priced simply: €7 per second of final animation.</p>
     </div>
   )
 }

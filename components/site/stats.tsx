@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { motion, useInView, useReducedMotion } from 'framer-motion'
 
+import { BrandWatermark } from '@/components/site/brand-mark'
 import { stats } from '@/lib/site-data'
 
 function Counter({ value, suffix }: { value: number; suffix: string }) {
@@ -42,8 +43,9 @@ function Counter({ value, suffix }: { value: number; suffix: string }) {
 
 export function Stats() {
   return (
-    <section className="border-y border-black/10 bg-black px-6 py-14 text-white sm:px-10 sm:py-16 lg:py-24">
-      <div className="mx-auto grid max-w-6xl grid-cols-2 gap-6 sm:grid-cols-4 sm:gap-8">
+    <section id="stats" className="snap-section relative overflow-hidden border-y border-black/10 bg-black px-6 py-14 text-white sm:px-10 sm:py-16 lg:py-24">
+      <BrandWatermark className="left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2" size={230} invert />
+      <div className="relative mx-auto grid max-w-6xl grid-cols-2 gap-6 sm:grid-cols-4 sm:gap-8">
         {stats.map((stat, index) => (
           <motion.div
             key={stat.label}

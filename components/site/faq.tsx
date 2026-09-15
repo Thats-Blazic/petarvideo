@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { ChevronDown } from 'lucide-react'
 
+import { SectionHeader } from '@/components/site/section-header'
 import { reveal } from '@/lib/motion'
 import { faqs } from '@/lib/site-data'
 
@@ -11,12 +12,9 @@ export function Faq() {
   const [open, setOpen] = useState<number | null>(0)
 
   return (
-    <section id="faq" className="mx-auto max-w-4xl px-6 py-20 sm:px-10 sm:py-24 lg:py-36">
+    <section id="faq" className="snap-section mx-auto max-w-4xl px-6 py-20 sm:px-10 sm:py-24 lg:py-36">
       <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, margin: '-100px' }} variants={reveal}>
-        <p className="mb-4 text-xs font-semibold tracking-[.28em] text-black/40">FAQ</p>
-        <h2 className="text-4xl font-medium tracking-[-.05em] sm:text-5xl md:text-6xl md:tracking-[-.06em]">
-          Good questions.
-        </h2>
+        <SectionHeader title="FAQ" />
       </motion.div>
 
       <div className="mt-10 divide-y divide-black/10 border-y border-black/10 sm:mt-14">

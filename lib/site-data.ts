@@ -1,105 +1,77 @@
-export type Service = 'SHORT FORM' | 'YOUTUBE' | 'PREMIUM'
-
 export type Project = {
   title: string
   type: string
   description: string
-  price: string
+  /** Length of this piece, in seconds — price is derived from this via lib/pricing.ts. */
+  seconds: number
   tone: string
   label: string
-  service: Service
+  /** Public path to preview video, e.g. `/work/sequence-03.mp4` */
+  videoSrc?: string
+  comingSoon?: boolean
 }
 
 export const projects: Project[] = [
   {
-    title: 'YouTube Edit',
-    type: 'Long form · 2026',
-    description: 'A clean, considered edit built to hold attention from the first frame.',
-    price: '€180',
+    title: 'X Concept',
+    type: 'Product Concept · Motion Design · 2026',
+    description:
+      'A speculative motion piece for X — bold typography, tight rhythm and UI motion that feels native to the feed: fast cuts, clear hierarchy and just enough attitude to stop the scroll.',
+    seconds: 20,
     tone: 'from-zinc-800 via-zinc-700 to-zinc-500',
     label: '01',
-    service: 'YOUTUBE',
+    videoSrc: '/work/sequence-03.mp4',
   },
   {
-    title: 'Social Media Pack',
-    type: 'Reels / TikTok · 2026',
-    description: 'Fast, vertical cuts with rhythm, clarity and a little more impact.',
-    price: '€120',
+    title: 'iCloud Concept',
+    type: 'Product Concept · Motion Design · 2026',
+    description:
+      'An iCloud-forward concept animation — soft depth, calm transitions and cloud-sync metaphors rendered with Apple-level restraint: light, space and motion that sell trust without shouting.',
+    seconds: 15,
     tone: 'from-neutral-900 via-stone-700 to-orange-200',
     label: '02',
-    service: 'SHORT FORM',
+    videoSrc: '/work/sequence-03-2.mp4',
   },
   {
     title: 'Cinematic Promo',
     type: 'Commercial · 2026',
-    description: 'A cinematic brand story shaped around mood, motion and sound.',
-    price: '€650',
+    description: 'A cinematic animated brand story shaped around mood, motion and sound.',
+    seconds: 45,
     tone: 'from-slate-900 via-slate-700 to-sky-200',
     label: '03',
-    service: 'PREMIUM',
+    comingSoon: true,
   },
   {
     title: 'Founder Story',
-    type: 'Brand film · 2026',
-    description: 'Human, honest storytelling for people building something meaningful.',
-    price: '€420',
+    type: 'Brand Animation · 2026',
+    description: 'Human, honest animated storytelling for people building something meaningful.',
+    seconds: 90,
     tone: 'from-stone-900 via-stone-600 to-amber-100',
     label: '04',
-    service: 'PREMIUM',
+    comingSoon: true,
   },
 ]
 
-export type PackageDuration = {
-  /** Duration already included in the base price, in seconds. */
-  includedSeconds: number
-  /** Extra cost per additional minute beyond the included duration. */
-  perMinuteOver: number
-  /** Sensible default duration for this package, in seconds. */
-  defaultSeconds: number
-}
-
-export type Package = {
-  name: Service
+export type PricingTier = {
+  seconds: number
   price: number
-  suffix: string
-  detail: string
-  features: string[]
-  duration: PackageDuration
+  tag: string
   popular?: boolean
 }
 
-export const packages: Package[] = [
-  {
-    name: 'SHORT FORM',
-    price: 60,
-    suffix: '/ video',
-    detail: 'Reels · TikTok · Shorts',
-    features: ['Vertical 9:16 format', 'Captions & sound design', '2 rounds of revisions'],
-    duration: { includedSeconds: 30, perMinuteOver: 20, defaultSeconds: 30 },
-  },
-  {
-    name: 'YOUTUBE',
-    price: 180,
-    suffix: '/ video',
-    detail: 'Full YouTube editing',
-    features: ['Full narrative pacing', 'Color grade & sound mix', '3 rounds of revisions'],
-    duration: { includedSeconds: 480, perMinuteOver: 12, defaultSeconds: 480 },
-    popular: true,
-  },
-  {
-    name: 'PREMIUM',
-    price: 650,
-    suffix: '/ project',
-    detail: 'Cinematic / commercial editing',
-    features: ['Cinematic grade & VFX', 'Custom sound design', 'Unlimited revisions'],
-    duration: { includedSeconds: 180, perMinuteOver: 45, defaultSeconds: 180 },
-  },
+/** Flat €7/second pricing, shown as a few common reference lengths. */
+export const pricingTiers: PricingTier[] = [
+  { seconds: 10, price: 70, tag: 'Quick sting / logo reveal' },
+  { seconds: 15, price: 105, tag: 'Reels · TikTok · Shorts' },
+  { seconds: 30, price: 210, tag: 'Product or app teaser', popular: true },
+  { seconds: 60, price: 420, tag: 'Explainer / brand animation' },
+  { seconds: 120, price: 840, tag: 'Full narrative piece' },
 ]
 
 export const stats: { value: number; suffix: string; label: string }[] = [
-  { value: 180, suffix: '+', label: 'Videos edited' },
+  { value: 180, suffix: '+', label: 'Animations delivered' },
   { value: 60, suffix: '+', label: 'Happy clients' },
-  { value: 4, suffix: 'y', label: 'Years editing' },
+  { value: 4, suffix: 'y', label: 'Years in motion design' },
   { value: 24, suffix: 'h', label: 'Avg. turnaround' },
 ]
 
@@ -107,83 +79,48 @@ export const processSteps = [
   {
     number: '01',
     icon: 'upload' as const,
-    title: 'Send your footage',
-    description: 'Drop your raw clips and a short brief through a shared drive — no fancy setup required.',
+    title: 'Share your brief',
+    description: 'Send your script, brand assets and references — no raw footage required.',
   },
   {
     number: '02',
     icon: 'edit' as const,
-    title: 'I craft the edit',
-    description: 'Pacing, sound, color and story come together into a first cut built around your goal.',
+    title: 'I craft the animation',
+    description: 'Storyboard, motion, sound and color come together into a first draft built around your goal.',
   },
   {
     number: '03',
     icon: 'review' as const,
     title: 'You review & tweak',
-    description: 'Leave timestamped notes. Revisions are fast, focused and included in every package.',
+    description: 'Leave timestamped notes. Revisions are fast, focused and included in every project.',
   },
   {
     number: '04',
     icon: 'deliver' as const,
     title: 'Final export, delivered',
-    description: 'You get a polished, platform-ready file — exactly as long as you asked for.',
-  },
-]
-
-export const testimonials = [
-  {
-    name: 'Ana K.',
-    role: 'YouTuber · 220K subscribers',
-    quote: 'Petar turned three hours of raw footage into an 8 minute video that actually kept people watching. Retention went up almost immediately.',
-    rating: 5,
-    initials: 'AK',
-    tone: 'from-zinc-800 to-zinc-500',
-  },
-  {
-    name: 'Marko S.',
-    role: 'Founder, Northbeam',
-    quote: 'We needed a 45 second brand story for launch day. It came back cinematic, on-brief and on time — no notes needed.',
-    rating: 5,
-    initials: 'MS',
-    tone: 'from-slate-900 to-sky-400',
-  },
-  {
-    name: 'Lena V.',
-    role: 'Content creator',
-    quote: 'The short form pack is unreal value. Fast turnaround, punchy captions, and the pacing just hits different.',
-    rating: 5,
-    initials: 'LV',
-    tone: 'from-stone-800 to-amber-300',
-  },
-  {
-    name: 'David P.',
-    role: 'Agency creative director',
-    quote: 'Communicated clearly, delivered early, and the cut felt more expensive than what we paid for it.',
-    rating: 4,
-    initials: 'DP',
-    tone: 'from-neutral-900 to-orange-300',
+    description: 'You get a polished, platform-ready animation — exactly as long as you asked for.',
   },
 ]
 
 export const faqs = [
   {
-    q: 'How long can my video be?',
-    a: 'Anything from a 15 second Reel to a 20+ minute YouTube video. Pick your clip length in the booking form — seconds or minutes — and the price updates automatically.',
+    q: 'How long can my animation be?',
+    a: 'Anything from a 10 second sting to a 2+ minute brand film. Pick the exact length in the booking form — seconds or minutes — and the price updates instantly.',
   },
   {
-    q: 'What if my footage runs longer than the package includes?',
-    a: 'No problem. Each package includes a base duration; anything beyond that is billed per extra minute at a clear, published rate shown right in the form.',
+    q: 'How is the price calculated?',
+    a: 'Every project is billed at a flat €7 per second of final animation — no hidden tiers, no surprise fees. Choose your duration and see the total before you send your request.',
   },
   {
     q: 'What do you need from me to get started?',
-    a: 'Your raw footage (or a link to it), a short brief on tone and goal, and any reference videos you like. That is enough to produce a strong first cut.',
+    a: 'Your brief, brand assets (logo, colors, fonts) and any reference videos or animations you like. That is enough to produce a strong first draft.',
   },
   {
     q: 'How many revisions are included?',
-    a: 'Every package includes at least two rounds of revisions. Premium projects include unlimited rounds until you are happy with the result.',
+    a: 'Every project includes at least two rounds of revisions, with additional rounds available for longer pieces.',
   },
   {
     q: 'What is the typical turnaround time?',
-    a: 'Short form content usually ships in 24–48 hours. YouTube and premium projects typically take 3–7 days depending on length and complexity.',
+    a: 'Short animations (under 30 seconds) usually ship in 2–4 days. Longer, more complex pieces take 1–2 weeks depending on length and complexity.',
   },
 ]
